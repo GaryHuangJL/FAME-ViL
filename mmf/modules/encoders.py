@@ -964,6 +964,7 @@ class ViTEncoder(Encoder):
         self.module, self.hf_config = self._model_class.from_config(config)
         self.embeddings = self.module.embeddings
         self.out_dim = self.hf_config.hidden_size
+        self.avgpool2d=torch.nn.AvgPool2d(kernel_size=(2,2),stride=(2,2),padding=0)
 
     @property
     def _model_class(self):
@@ -975,4 +976,10 @@ class ViTEncoder(Encoder):
         if "output_hidden_states" not in kwargs:
             kwargs["output_hidden_states"] = False
         output = self.module(*args, **kwargs)
-        return output["last_hidden_state"][:, 1:]
+        temp = output["last_hidden_state"][:, 6:].view(-1,14,14,768)
+        temp = temp.permute(0,3,1,2)
+        y = self.avgpool2d(temp)
+        y = y.permute(0,2,3,1)
+        y = y.contiguous().view(-1,49,768)
+
+        return y

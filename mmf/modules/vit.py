@@ -132,9 +132,6 @@ class PatchEmbeddings(nn.Module):
 
 
 
-
-
-
 class ViTAttention(vit.ViTAttention):
     def __init__(self, config):
         check_vit_in_transformers()
@@ -292,7 +289,7 @@ class ViTModel(vit.ViTPreTrainedModel):
         super().__init__(config)
         self.config = config
 
-        self.embeddings = vit.ViTEmbeddings(config)
+        self.embeddings = ViTEmbeddings(config)
         self.encoder = ViTEncoder(config)
 
         self.layernorm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
